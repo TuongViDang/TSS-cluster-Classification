@@ -1,0 +1,65 @@
+setwd("data/")
+
+#Import libraries 
+library(tidyverse)
+library(ggplot2)
+library(ggExtra)
+library(ggpubr)
+library(FactoMineR)
+library(MixtureInf)
+
+#Import data
+Expo_For<-read.table("241EXPO.d17.fwd.norm.txt",header=T)%>%
+  mutate(strand="+",GrowthPhase="EXPO",temperature="30")
+Expo_Rev<-read.table("241EXPO.d17.rev.norm.txt",header=T)%>%
+  mutate(strand="-",GrowthPhase="EXPO",temperature="30")
+Stat_For<-read.table("241STAT.d17.fwd.norm.txt",header=T)%>%
+  mutate(strand="+",GrowthPhase="STAT",temperature="30")
+Stat_Rev<-read.table("241STAT.d17.rev.norm.txt",header=T)%>%
+  mutate(strand="-",GrowthPhase="STAT",temperature="30")
+Expo_Combined<-rbind(Expo_For,Expo_Rev)
+Stat_Combined<-rbind(Stat_For,Stat_Rev)
+ExpoStat_Combined<-rbind(Expo_Combined,Stat_Combined)
+View(ExpoStat_Combined)
+
+
+#Plot EXPO data
+E<-ggplot(Expo_Combined,aes(x=Size,y=SI))
+
+pE<-E+
+  geom_point(alpha=0.15,size=0.1)+
+  geom_density_2d_filled(alpha=0.8,bins=10)+
+  scale_x_continuous(expand = c(0, 0),lim=c(-5,133),breaks = sort(c(seq(0, 130, by = 20))) )+
+  scale_y_continuous(expand = c(0, 0),lim=c(-3.2,2.2),breaks=sort(c(seq(-3,2,by=1))))+
+  theme(legend.position = "none")+
+  theme(axis.text.x = element_text(size=15),
+        axis.text.y = element_text(size=15),
+        axis.title.x = element_text(size=30,color = "coral1"),
+        axis.title.y = element_text(size=30,color="dodgerblue2"))+
+  xlab("Size (nt)")+
+  labs(title="EXPO 30")
+
+S<-ggplot(Stat_Combined,aes(x=Size,y=SI))
+pS<-S+
+  geom_point(alpha=0.15,size=0.1)+
+  geom_density_2d_filled(alpha=0.8,bins=10)+
+  scale_x_continuous(expand = c(0, 0),lim=c(-5,133),breaks = sort(c(seq(0, 130, by = 20))) )+
+  scale_y_continuous(expand = c(0, 0),lim=c(-3.2,2.2),breaks=sort(c(seq(-3,2,by=1))))+
+  theme(legend.position = "none")+
+  theme(axis.text.x = element_text(size=15),
+        axis.text.y = element_text(size=15),
+        axis.title.x = element_text(size=30,color = "coral1"),
+        axis.title.y = element_text(size=30,color="dodgerblue2"))+
+  labs(title="STAT 30")
+
+
+
+#add margin distribution
+E_plot<-ggMarginal(pE,size=4,type="histogram", xparams = list(bins=60,fill="coral1"),yparams = list(bins=60,fill="cornflowerblue"))
+S_plot<-ggMarginal(pS,size=3,type="histogram", xparams = list(bins=60,fill="coral1"),yparams = list(bins=60,fill="cornflowerblue"))
+
+#Both Expo and Stat plot
+ggarrange(E_plot, S_plot, ncol = 2, nrow = 1)
+
+#Figure 1A
+E_plot 
