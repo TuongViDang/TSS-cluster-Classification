@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r }
 #Set up directory
-my_directory <- file.path("D:", "PhD", "git_PhD","TSS-cluster-Classification")   
+my_directory <- file.path("data","TSS-cluster-Classification")   
 setwd(my_directory)
 ```
 
